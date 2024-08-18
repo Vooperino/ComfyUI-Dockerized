@@ -25,7 +25,7 @@ docker builder prune -a -f
 
 | WSL Distro    | Supported |
 | :-------- | :------- |
-| `Ubuntu` | Not Tested |
+| `Ubuntu` | Tested (Working) |
 | `Arch Linux` | Not Tested |
 | `Debian` | Not Tested |
 | `OracleLinux` | Not Tested |
