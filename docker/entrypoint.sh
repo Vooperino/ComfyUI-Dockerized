@@ -14,10 +14,13 @@ if [ "$DEBUG" = "true" ]; then
 fi
 
 if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null; then
-    echo "Current build of the docker container image does not support use of WSL, this action is blocked due to instablities that could be caused."
-    echo "Its possbile that in the future this will be supported."
-    echo "Apologies for the inconvenience caused!"
-    exit 1
+    echo "======== EXPERIMENTAL NOTICE ========"
+    echo "You are now executing this container in WSL, which can make the system unstable and unresponsive. WSL is under development, and the present stable conditions are unclear."
+    echo " "
+    echo "You've been warned. Use it with caution!"
+    echo " "
+    echo "Application will start in 30 seconds"
+    sleep 30s
 fi
 
 echo "[INFO] Checking, before launching..."
