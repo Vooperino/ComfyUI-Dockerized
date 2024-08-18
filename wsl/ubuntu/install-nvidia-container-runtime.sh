@@ -9,8 +9,11 @@ curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dear
 
 sed -i -e '/experimental/ s/^#//g' /etc/apt/sources.list.d/nvidia-container-toolkit.list
 sudo apt-get update
-sudo apt-get install -y nvidia-container-toolkit
+sudo apt-get install -y nvidia-container-toolkit alsa-utils ubuntu-drivers-common
+sudo ubuntu-drivers install
 
 sudo nvidia-ctk runtime configure --runtime=docker
 
 sudo service docker start
+echo "Executing Test Docker"
+sudo docker run --rm --runtime=nvidia --gpus all ubuntu nvidia-smi
