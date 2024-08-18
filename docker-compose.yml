@@ -16,7 +16,7 @@ services:
     volumes:
       - "./comfyui_data/data:/data"
       - "./comfyui_data/output:/output"
-      - "./comfyui_data/web-extensions:/stable-diffusion/web/extensions"
+      - "./comfyui_data/web-extensions:/comfyui/web/extensions"
     environment:
       - CNODE_GIT_CHECK_LATEST=true
       - DL_CUI_MANAGER=true
