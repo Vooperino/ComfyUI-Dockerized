@@ -17,6 +17,11 @@ docker-compose build --no-cache --pull
 docker builder prune -a -f
 ```
 
+# Minimum Specifications Required 
+
+You will need atleast around `32GB` RAM (DDR4 and UP) RAM for this to run, but depended what modules you will run on it. 
+GPU is must required for this as of now this build will only support Nvidia GPUs looks for a GPU that is powerful enought to run Flux or Stable Diffusion Modules on it, suggestion is to use `RTX 3060` or `RTX 2060` as the minimum.
+
 # WSL
 
 > [!WARNING]  
