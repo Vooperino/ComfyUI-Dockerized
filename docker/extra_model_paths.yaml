@@ -1,0 +1,11 @@
+a111:
+  base_path: /data
+  configs: | 
+    models/Stable-diffusion
+    models/Stable-diffusion-XL-Base
+  upscale_models: |
+    models/RealESRGAN
+    models/ESRGAN
+    models/SwinIR
+    models/GFPGAN
+  clip: models/CLIPEncoder

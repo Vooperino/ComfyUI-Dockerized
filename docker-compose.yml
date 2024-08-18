@@ -1,0 +1,26 @@
+services:
+  dockerized-comfyui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dockerized-comfyui:1
+    stop_signal: SIGKILL
+    tty: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+              - driver: nvidia
+                device_ids: ['0']
+                capabilities: [gpu, compute, utility]
+    volumes:
+      - "./comfyui_data/data:/data"
+      - "./comfyui_data/output:/output"
+      - "./comfyui_data/web-extensions:/stable-diffusion/web/extensions"
+    environment:
+      - CNODE_GIT_CHECK_LATEST=true
+      - DL_CUI_MANAGER=true
+      - WEB_PORT=7860
+      - CLI_ARGS=--preview-method=taesd --normalvram
+    ports:
+      - "${WEB_PORT:-7860}:${WEB_PORT:-7860}"
