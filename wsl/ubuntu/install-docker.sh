@@ -9,6 +9,3 @@ sudo apt-get update
 sudo apt-get -y install docker-ce docker-ce-cli containerd.io
 sudo apt-get -y install docker-compose-plugin
 sudo gpasswd -a $USER docker
-newgrp docker
-
-echo "Restart your WSL 2 Ubuntu instance and then run 'service docker start'"
