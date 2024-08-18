@@ -23,6 +23,13 @@ docker builder prune -a -f
 > Running this container under WSL is EXPERIMENTAL.
 > USE IT HIGH CAUTION
 
+| WSL Distro    | Supported |
+| :-------- | :------- |
+| `Ubuntu` | Not Tested |
+| `Arch Linux` | Not Tested |
+| `Debian` | Not Tested |
+| `OracleLinux` | Not Tested |
+
 ## Ubuntu WSL (Current tested on)
 
 If you have a fresh install of WSL Ubuntu, make sure you have docker and nvidia container runtime installed. The install scripts can be found in the '/wsl/ubuntu' directory in this repository.
