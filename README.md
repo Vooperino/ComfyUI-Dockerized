@@ -14,6 +14,12 @@ docker-compose build --no-cache --pull
 docker builder prune -a -f
 ```
 
+# WSL
+
+> [!WARNING]  
+> Running this container under WSL is EXPERIMENTAL.
+> USE IT HIGH CAUTION
+
 # Environment variables
 
 | Variables    | Required | Default Value | Explanation |
