@@ -14,10 +14,13 @@ if [ "$DEBUG" = "true" ]; then
 fi
 
 if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null; then
-    echo "Current build of the docker container image does not support use of WSL, this action is blocked due to instablities that could be caused."
-    echo "Its possbile that in the future this will be supported."
-    echo "Apologies for the inconvenience caused!"
-    exit 1
+    echo "======== EXPERIMENTAL NOTICE ========"
+    echo "You are now executing this container in WSL, which can make the system unstable and unresponsive. WSL is under development, and the present stable conditions are unclear."
+    echo " "
+    echo "You've been warned. Use it with caution!"
+    echo " "
+    echo "Application will start in 30 seconds"
+    sleep 30s
 fi
 
 echo "[INFO] Checking, before launching..."
@@ -47,9 +50,9 @@ if [ -z "$(find "/CLEAN_CONFIG/web/extensions" -mindepth 1 -exec echo {} \;)" ];
     exit 1
 fi
 
-mkdir -vp /data/config/comfy/custom_nodes
-mkdir -vp /data/config/comfy/web-extensions
-mkdir -vp /stable-diffusion/custom_nodes
+mkdir -vp /data/config/custom_nodes
+mkdir -vp /data/config/web-extensions
+mkdir -vp /comfyui/custom_nodes
 
 mkdir -vp /data/models/upscale_models
 mkdir -vp /data/models/GLIGEN
@@ -59,14 +62,13 @@ mkdir -vp /data/models/seecoders
 mkdir -vp /data/models/mmdets
 mkdir -vp /data/models/onnx
 mkdir -vp /data/models/insightface
-mkdir -vp /data/models/Stable-diffusion-XL-Base
 
 declare -A MOUNTS
 
 MOUNTS["/root/.cache"]="/data/.cache"
-MOUNTS["${ROOT}/input"]="/data/config/comfy/input"
-MOUNTS["${ROOT}/custom_nodes"]="/data/config/comfy/custom_nodes"
-MOUNTS["${ROOT}/output"]="/output/comfy"
+MOUNTS["${ROOT}/input"]="/data/config/input"
+MOUNTS["${ROOT}/custom_nodes"]="/data/config/custom_nodes"
+MOUNTS["${ROOT}/output"]="/output"
 
 MOUNTS["${ROOT}/models/vae_approx"]="/data/models/VAE-approx"
 MOUNTS["${ROOT}/models/vae"]="/data/models/VAE"
@@ -76,7 +78,7 @@ MOUNTS["${ROOT}/models/controlnet"]="/data/models/ControlNet"
 MOUNTS["${ROOT}/models/hypernetworks"]="/data/models/hypernetworks"
 MOUNTS["${ROOT}/models/upscale_models"]="/data/models/upscale_models"
 MOUNTS["${ROOT}/models/embeddings"]="/data/models/embeddings"
-MOUNTS["${ROOT}/models/checkpoints"]="/data/models/Stable-diffusion"
+MOUNTS["${ROOT}/models/checkpoints"]="/data/models/checkpoints"
 MOUNTS["${ROOT}/models/sams"]="/data/models/sams"
 MOUNTS["${ROOT}/models/seecoders"]="/data/models/seecoders"
 MOUNTS["${ROOT}/models/mmdets"]="/data/models/mmdets"
@@ -140,9 +142,9 @@ done
 bash /docker/scripts/install-comfyui-manager.sh
 bash /docker/scripts/update-all-custom-nodes.sh
 
-if [ -f "/data/config/comfy/startup.sh" ]; then
+if [ -f "/data/config/startup.sh" ]; then
   pushd ${ROOT}
-  . /data/config/comfy/startup.sh
+  . /data/config/startup.sh
   popd
 fi
 
@@ -156,9 +158,9 @@ if [ -z "$(find "${WEB_EXTENSIONS}" -mindepth 1)" ]; then
   copyFreshExtenstion
 fi
 
-if [ -f "/data/config/comfy/startup.sh" ]; then
+if [ -f "/data/config/startup.sh" ]; then
   pushd ${ROOT}
-  . /data/config/comfy/startup.sh
+  . /data/config/startup.sh
   popd
 fi
 

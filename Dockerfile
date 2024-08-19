@@ -2,7 +2,7 @@ FROM pytorch/pytorch:2.4.0-cuda12.4-cudnn9-runtime
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PIP_PREFER_BINARY=1
-ENV ROOT=/stable-diffusion
+ENV ROOT=/comfyui
 ENV CUDA_HOME=/opt/conda
 ENV NVIDIA_VISIBLE_DEVICES=all 
 ENV PYTHONPATH="${PYTHONPATH}:${PWD}" 
@@ -13,6 +13,7 @@ USER root
 
 COPY /install /install
 COPY /docker /docker
+COPY /extra-scripts /extra-scripts
 
 RUN chmod -R u+x /install /docker
 RUN bash /install/install_base.sh

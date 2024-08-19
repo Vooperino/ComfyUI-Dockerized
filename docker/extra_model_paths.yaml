@@ -1,8 +1,7 @@
 a111:
   base_path: /data
   configs: | 
-    models/Stable-diffusion
-    models/Stable-diffusion-XL-Base
+    models/checkpoints
   upscale_models: |
     models/RealESRGAN
     models/ESRGAN
