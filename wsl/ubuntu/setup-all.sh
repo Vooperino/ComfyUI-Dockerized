@@ -8,5 +8,6 @@ echo "Setting up nvidia container docker runtime"
 bash "${SCRIPT_DIR}/install-nvidia-container-runtime.sh"
 
 echo "Building Image"
-cd ../../
-sudo docker compose build --no-cache
+cd "${SCRIPT_DIR}"
+cd "../../" 
+sudo docker compose build --no-cache --pull
