@@ -68,6 +68,9 @@ declare -A MOUNTS
 MOUNTS["/root/.cache"]="/data/.cache"
 MOUNTS["${ROOT}/input"]="/data/config/input"
 MOUNTS["${ROOT}/custom_nodes"]="/data/config/custom_nodes"
+
+MOUNTS["${ROOT}/user/default"]="/data/config/user-data"
+
 MOUNTS["${ROOT}/output"]="/output"
 
 MOUNTS["${ROOT}/models/vae_approx"]="/data/models/VAE-approx"
