@@ -2,10 +2,8 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-echo "Setting up docker"
-bash "${SCRIPT_DIR}/install-docker.sh"
-echo "Setting up nvidia container docker runtime"
-bash "${SCRIPT_DIR}/install-nvidia-container-runtime.sh"
+echo "Install required packages"
+bash "${SCRIPT_DIR}/install-required-packages.sh"
 
 echo "Building Image"
 cd "${SCRIPT_DIR}"
