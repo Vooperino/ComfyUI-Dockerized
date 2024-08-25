@@ -11,7 +11,7 @@ sudo systemctl enable --now docker
 sudo systemctl status docker
 
 echo "Installing Nvidia Container Toolkit and Drivers"
-sudo pacman --noconfirm -S nvidia nvidia-container-toolkit cuda cuda-tools nvidia-cg-toolkit nvidia-utils nvidia-settings nvidia-prime opencl-nvidia nvtop
+sudo pacman --noconfirm -S nvidia nvidia-container-toolkit nvidia-cg-toolkit opencl-nvidia nvtop
 echo "Updating Docker"
 sudo systemctl stop docker
 sudo systemctl status docker
