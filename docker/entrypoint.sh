@@ -192,6 +192,13 @@ if lsof -i -P -n | grep -q ":$WEB_PORT "; then
     exit 1
 fi
 
+sed -i "s/%WEB_PORT%/${WEB_PORT}/g" /docker/scripts/docker-health.sh
+
+echo "[INFO] Final Checkup..."
+if [ ! -f "${ROOT}/web/docker-up.html" ]; then
+    cp -r -f "/CLEAN_CONFIG/docker-up.html" "${ROOT}/web"
+fi
+
 echo "[INFO] Starting Up ComfyUI (Web Port ${WEB_PORT})..."
 while true; do
     python -u main.py --listen --port ${WEB_PORT} ${CLI_ARGS}

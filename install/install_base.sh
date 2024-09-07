@@ -43,6 +43,7 @@ if [ -d "${CLEAN_CONF_PATH}" ]; then
 fi
 
 mkdir -p "${CLEAN_CONF_PATH}/web/extensions"
+cp -r -f "${SCRIPT_DIR}/docker-up.html" "${CLEAN_CONF_PATH}/docker-up.html"
 
 echo "[INFO] Copying Configuration"
 cp -r -f "${APP_DIR}/web/extensions/." "${CLEAN_CONF_PATH}/web/extensions/."
@@ -52,4 +53,6 @@ if [ -z "$(find "${CLEAN_CONF_PATH}/web/extensions" -mindepth 1 -exec echo {} \;
 fi
 
 rm -rf "${APP_DIR}/web/extensions"
+cp -r -f "${SCRIPT_DIR}/docker-up.html" "${APP_DIR}/web"
+
 exit 0
