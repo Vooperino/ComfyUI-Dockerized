@@ -29,7 +29,7 @@ RUN conda install -c nvidia cuda --no-update-deps -y
 
 RUN rm -rf /install /temp_libs
 
-HEALTHCHECK --interval=5m --timeout=10s --start-period=30s --retries=3 \
+HEALTHCHECK --interval=5m --timeout=15s --start-period=1m --retries=3 \
   CMD bash /docker/scripts/docker-health.sh || exit 1
 
 ENTRYPOINT ["/docker/entrypoint.sh"]
