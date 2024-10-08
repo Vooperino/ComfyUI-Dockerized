@@ -28,6 +28,9 @@ GPU is must required for this as of now this build will only support Nvidia GPUs
 > Running this container under WSL is EXPERIMENTAL.
 > USE IT HIGH CAUTION
 
+> [!IMPORTANT]
+> This container should work longest if you able to pass GPU to WSL and get Docker working on your WSL
+
 | WSL Distro    | Supported | Note |
 | :-------- | :------- | :------- | 
 | `Ubuntu` | Supported | Ubuntu from MS Store|
