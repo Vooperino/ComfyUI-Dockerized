@@ -28,12 +28,15 @@ GPU is must required for this as of now this build will only support Nvidia GPUs
 > Running this container under WSL is EXPERIMENTAL.
 > USE IT HIGH CAUTION
 
-| WSL Distro    | Supported |
-| :-------- | :------- |
-| `Ubuntu` | Tested (Working) |
-| `Arch Linux` | Not Tested |
-| `Debian` | Not Tested |
-| `OracleLinux` | Not Tested |
+> [!IMPORTANT]
+> This container should work longest if you able to pass GPU to WSL and get Docker working on your WSL
+
+| WSL Distro    | Supported | Note |
+| :-------- | :------- | :------- | 
+| `Ubuntu` | Supported | Ubuntu from MS Store|
+| `Arch Linux` | Supported | Arch from [MS Store](https://www.microsoft.com/store/productId/9MZNMNKSM73X?ocid=pdpshare) [Vineel Sai - Arch WSL](https://github.com/VSWSL/Arch-WSL)|
+| `Debian` | Not Tested | |
+| `OracleLinux` | Not Tested | |
 
 ## Ubuntu WSL (Current tested on)
 

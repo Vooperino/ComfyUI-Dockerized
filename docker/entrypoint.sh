@@ -68,6 +68,9 @@ declare -A MOUNTS
 MOUNTS["/root/.cache"]="/data/.cache"
 MOUNTS["${ROOT}/input"]="/data/config/input"
 MOUNTS["${ROOT}/custom_nodes"]="/data/config/custom_nodes"
+
+MOUNTS["${ROOT}/user"]="/data/config/user-data"
+
 MOUNTS["${ROOT}/output"]="/output"
 
 MOUNTS["${ROOT}/models/vae_approx"]="/data/models/VAE-approx"
@@ -187,6 +190,13 @@ fi
 if lsof -i -P -n | grep -q ":$WEB_PORT "; then
     echo "[ERROR] Port ${WEB_PORT} already in-use! Exiting"
     exit 1
+fi
+
+sed -i "s/%WEB_PORT%/${WEB_PORT}/g" /docker/scripts/docker-health.sh
+
+echo "[INFO] Final Checkup..."
+if [ ! -f "${ROOT}/web/docker-up.html" ]; then
+    cp -r -f "/CLEAN_CONFIG/docker-up.html" "${ROOT}/web"
 fi
 
 echo "[INFO] Starting Up ComfyUI (Web Port ${WEB_PORT})..."
