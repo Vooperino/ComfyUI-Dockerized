@@ -14,13 +14,13 @@ if [ "$DEBUG" = "true" ]; then
 fi
 
 if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null; then
-    echo "======== EXPERIMENTAL NOTICE ========"
-    echo "You are now executing this container in WSL, which can make the system unstable and unresponsive. WSL is under development, and the present stable conditions are unclear."
+    echo "======== WSL NOTICE ========"
+    echo "You are now executing this container in WSL, which can make the system unstable and unresponsive."
     echo " "
     echo "You've been warned. Use it with caution!"
     echo " "
-    echo "Application will start in 30 seconds"
-    sleep 30s
+    echo "Application will start in 5 seconds"
+    sleep 5s
 fi
 
 echo "[INFO] Checking, before launching..."
