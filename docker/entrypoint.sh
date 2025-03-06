@@ -40,18 +40,18 @@ if [ -z "$(find "${ROOT}" -mindepth 1 -exec echo {} \;)" ]; then
     exit 1
 fi
 
-if [ ! -d "/CLEAN_CONFIG/web/extensions" ]; then
-    echo "[IMAGE ISSUE] Clean CFG '/CLEAN_CONFIG/web/extensions/' is not found! Build issue?"
-    exit 1
-fi
+#if [ ! -d "/CLEAN_CONFIG/web/extensions" ]; then
+#    echo "[IMAGE ISSUE] Clean CFG '/CLEAN_CONFIG/web/extensions/' is not found! Build issue?"
+#    exit 1
+#fi
 
-if [ -z "$(find "/CLEAN_CONFIG/web/extensions" -mindepth 1 -exec echo {} \;)" ]; then
-    echo "[IMAGE ISSUE] Clean CFG '/CLEAN_CONFIG/web/extensions/' is empty! Build issue?"
-    exit 1
-fi
+#if [ -z "$(find "/CLEAN_CONFIG/web/extensions" -mindepth 1 -exec echo {} \;)" ]; then
+#    echo "[IMAGE ISSUE] Clean CFG '/CLEAN_CONFIG/web/extensions/' is empty! Build issue?"
+#    exit 1
+#fi
 
 mkdir -vp /data/config/custom_nodes
-mkdir -vp /data/config/web-extensions
+#mkdir -vp /data/config/web-extensions
 mkdir -vp /comfyui/custom_nodes
 
 mkdir -vp /data/models/upscale_models
@@ -154,12 +154,12 @@ fi
 chmod -R 777 $ROOT/custom_nodes
 process_directory "${ROOT}/custom_nodes"
 
-WEB_EXTENSIONS="${ROOT}/web/extensions"
+#WEB_EXTENSIONS="${ROOT}/web/extensions"
 
-if [ -z "$(find "${WEB_EXTENSIONS}" -mindepth 1)" ]; then
-  echo "[WARNING] Web Extensions are empty"
-  copyFreshExtenstion
-fi
+#if [ -z "$(find "${WEB_EXTENSIONS}" -mindepth 1)" ]; then
+#  echo "[WARNING] Web Extensions are empty"
+#  copyFreshExtenstion
+#fi
 
 if [ -f "/data/config/startup.sh" ]; then
   pushd ${ROOT}

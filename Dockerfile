@@ -15,7 +15,7 @@ COPY /install /install
 COPY /docker /docker
 COPY /extra-scripts /extra-scripts
 
-RUN chmod -R u+x /install /docker
+RUN chmod -R u+x /install /docker /extra-scripts
 RUN bash /install/install_base.sh
 
 WORKDIR ${ROOT}
