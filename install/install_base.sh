@@ -45,14 +45,17 @@ fi
 mkdir -p "${CLEAN_CONF_PATH}/web/extensions"
 cp -r -f "${SCRIPT_DIR}/docker-up.html" "${CLEAN_CONF_PATH}/docker-up.html"
 
-echo "[INFO] Copying Configuration"
-cp -r -f "${APP_DIR}/web/extensions/." "${CLEAN_CONF_PATH}/web/extensions/."
-if [ -z "$(find "${CLEAN_CONF_PATH}/web/extensions" -mindepth 1 -exec echo {} \;)" ]; then
-    echo "[BUILD SCRIPT ERROR] Unable to generate Clean Configuration. Error: Nothing in directory..."
-    exit 1
-fi
+#echo "[INFO] Copying Configuration"
+#cp -r -f "${APP_DIR}/web/extensions/." "${CLEAN_CONF_PATH}/web/extensions/."
+#if [ -z "$(find "${CLEAN_CONF_PATH}/web/extensions" -mindepth 1 -exec echo {} \;)" ]; then
+#    echo "[BUILD SCRIPT ERROR] Unable to generate Clean Configuration. Error: Nothing in directory..."
+#    exit 1
+#fi
 
-rm -rf "${APP_DIR}/web/extensions"
-cp -r -f "${SCRIPT_DIR}/docker-up.html" "${APP_DIR}/web"
+#rm -rf "${APP_DIR}/web/extensions"
+#cp -r -f "${SCRIPT_DIR}/docker-up.html" "${APP_DIR}/web"
+
+cd ${SCRIPT_DIR}
+python3 ./copy_status_page.py
 
 exit 0
