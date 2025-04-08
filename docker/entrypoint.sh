@@ -68,4 +68,4 @@ for to_path in "${!MOUNTS[@]}"; do
 done
 
 supervisord -c /opt/vlBootstrap/supervisord.conf
-supervisorctl -c /opt/vlBootstrap/supervisord.conf start comfyui
+startComfy
