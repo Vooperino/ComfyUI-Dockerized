@@ -11,7 +11,7 @@ BOOTSTRAP_PATH="/opt/vlBootstrap"
 
 echo "[INFO] Installing Required Linux Packages and Updates"
 apt-get -qq update
-apt-get -qq install -y git wget curl gcc g++ ffmpeg libsm6 libxext6 libglfw3-dev libgles2-mesa-dev pkg-config libcairo2 libcairo2-dev build-essential fonts-dejavu-core rsync git jq yq moreutils aria2 supervisord
+apt-get -qq install -y git wget curl gcc g++ ffmpeg libsm6 libxext6 libglfw3-dev libgles2-mesa-dev pkg-config libcairo2 libcairo2-dev build-essential fonts-dejavu-core rsync git jq moreutils aria2 supervisor
 apt-get -qq full-upgrade -y
 apt-get -qq clean
 
