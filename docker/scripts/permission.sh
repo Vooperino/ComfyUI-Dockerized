@@ -6,10 +6,16 @@ TARGET_DIRS=(
   "/output"
 )
 
+echo "[Perm-fix] Permission updater started"
+
 while true; do
     for dir in "${TARGET_DIRS[@]}"; do
-        mkdir -p "$dir"
-        chmod -R $PERMISSION_NUM "$dir"
+        if [ ! -z "$dir" ]; then
+            if [ -d "$dir" ]; then
+                chmod -R $PERMISSION_NUM "$dir"
+                echo "[Perm-fix] Updated permissions on $dir"
+            fi
+        fi
     done
     sleep 10
 done
