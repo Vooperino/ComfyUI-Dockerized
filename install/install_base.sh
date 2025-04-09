@@ -37,7 +37,7 @@ chmod -R 755 "${BOOTSTRAP_PATH}/supervisord.conf"
 cp "${DOCKER_ROOT}/internal_cmds/startComfy.sh" "/usr/bin/startComfy"
 cp "${DOCKER_ROOT}/internal_cmds/stopComfy.sh" "/usr/bin/stopComfy"
 
-chmod -R 755 /usr/bin/startComfy /usr/bin/stopComfy
+chmod -R 755 /usr/bin/startComfy /usr/bin/stopComfy ${DOCKER_ROOT}/scripts/permission.sh
 
 echo "[INFO] Pulling Latest ComfyUI from GitHub"
 git clone https://github.com/comfyanonymous/ComfyUI.git "${APP_DIR}"

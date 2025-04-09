@@ -108,19 +108,20 @@ if [ ! -f "${ROOT}/web/docker-up.html" ]; then
     cp -r -f "/CLEAN_CONFIG/docker-up.html" "${ROOT}/web"
 fi
 
-echo "[INFO] Starting Up ComfyUI (Web Port ${WEB_PORT})..."
-while true; do
-    python -u main.py --listen --port ${WEB_PORT} ${CLI_ARGS}
-    if [ $? -ne 0 ]; then
-        echo "Exited as 0."
-        break
-    else
-        echo "[WARN] ComfyUI has crashed, restarting..."
-    fi
-done
+#echo "[INFO] Starting Up ComfyUI (Web Port ${WEB_PORT})..."
+#while true; do
+#    python -u main.py --listen --port ${WEB_PORT} ${CLI_ARGS}
+#    if [ $? -ne 0 ]; then
+#        echo "Exited as 0."
+#        break
+#    else
+#        echo "[WARN] ComfyUI has crashed, restarting..."
+#    fi
+#done
 
 
-cd "/opt/vlBootstrap"
+#cd "/opt/vlBootstrap"
+#echo "[INFO] Starting ComfyUI using SupervisorD"
+#supervisorctl start comfyui
 
-echo "[INFO] Starting ComfyUI using SupervisorD"
-supervisorctl start comfyui
+supervisord -n -c /opt/vlBootstrap/supervisord.conf
