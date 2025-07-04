@@ -18,6 +18,21 @@ function process_install_py() {
     fi
 }
 
+function process_directory() {
+    echo "[INFO] Validating Custom Nodes Directory!"
+    local dir="$1"
+    if [[ -d "${dir}" ]]; then
+        for sub_dir in "${dir}"/*; do
+            if [[ -d "${sub_dir}" ]]; then
+                install_requirements "${sub_dir}"
+                process_install_py "${sub_dir}" || true
+            fi
+        done
+    else
+        echo "[Error] ${dir} is not a directory."
+    fi
+}
+
 mkdir -vp /data/config/custom_nodes
 mkdir -vp /comfyui/custom_nodes
 
@@ -57,22 +72,6 @@ MOUNTS["${ROOT}/models/insightface"]="/data/models/insightface"
 MOUNTS["${ROOT}/models/clip"]="/data/models/clip"
 MOUNTS["${ROOT}/models/unet"]="/data/models/unet"
 
-function process_directory() {
-    local dir="$1"
-    if [[ -d "${dir}" ]]; then
-        for sub_dir in "${dir}"/*; do
-            if [[ -d "${sub_dir}" ]]; then
-                install_requirements "${sub_dir}"
-                process_install_py "${sub_dir}" || true
-            fi
-        done
-    else
-        echo "Error: ${dir} is not a directory."
-    fi
-}
-
-process_directory "/comfyui/custom_nodes"
-
 for to_path in "${!MOUNTS[@]}"; do
   set -Eeuo pipefail
   from_path="${MOUNTS[${to_path}]}"
@@ -86,6 +85,8 @@ for to_path in "${!MOUNTS[@]}"; do
   ln -sT "${from_path}" "${to_path}"
   echo Mounted $(basename "${from_path}")
 done
+
+process_directory "/comfyui/custom_nodes"
 
 supervisord -c /opt/vlBootstrap/supervisord.conf
 startComfy
