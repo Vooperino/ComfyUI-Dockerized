@@ -1,5 +1,7 @@
 #!/bin/bash
 
+CUSTOM_NODES_PATH="/comfyui/custom_nodes"
+
 if [ -z "${DEBUG:-}" ]; then
     export DEBUG=false
 fi
@@ -58,17 +60,29 @@ function process_install_py() {
     fi
 }
 
+function check_custom_nodes() {
+    for dir in "${CUSTOM_NODES_PATH}/*/"; do
+        if [ -d "${dir}" ]; then
+            echo "[BOOTSTRAP] Checking custom mode ${dir}"
+            local dirname=$(basename "$dir")
+            install_requirements ${dirname}
+            process_install_py ${dirname}
+            unset dirname
+        fi
+    done
+}
+
 bash /docker/scripts/install-comfyui-manager.sh
 bash /docker/scripts/update-all-custom-nodes.sh
 
-if [ -f "/data/config/startup.sh" ]; then
-  pushd ${ROOT}
-  . /data/config/startup.sh
-  popd
+chmod -R 777 $ROOT/custom_nodes
+
+if [ ! -d "${CUSTOM_NODES_PATH}" ]; then
+    echo "[Error (Build Error?)] Unable to locate '${CUSTOM_NODES_PATH}' in the container. Is the build correct?"
+    exit 1
 fi
 
-chmod -R 777 $ROOT/custom_nodes
-process_directory "${ROOT}/custom_nodes"
+check_custom_nodes
 
 if [ -f "/data/config/startup.sh" ]; then
   pushd ${ROOT}
