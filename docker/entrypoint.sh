@@ -1,5 +1,23 @@
 #!/bin/bash
 
+function install_requirements() {
+    local dir="$1"
+    if [[ -f "${dir}/requirements.txt" ]]; then
+        echo "Installing requirements for ${dir}..."
+        pip install -r "${dir}/requirements.txt"
+        echo "Requirements installed for ${dir}."
+    else
+        echo "No requirements.txt found in ${dir}. Skipping."
+    fi
+}
+
+function process_install_py() {
+    local dir="$1"
+    if [[ -f "${dir}/install.py" ]]; then
+        python3 ${dir}/install.py
+    fi
+}
+
 mkdir -vp /data/config/custom_nodes
 mkdir -vp /comfyui/custom_nodes
 
@@ -52,6 +70,8 @@ function process_directory() {
         echo "Error: ${dir} is not a directory."
     fi
 }
+
+process_directory "/comfyui/custom_nodes"
 
 for to_path in "${!MOUNTS[@]}"; do
   set -Eeuo pipefail

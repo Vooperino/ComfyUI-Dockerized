@@ -1,7 +1,5 @@
 #!/bin/bash
 
-CUSTOM_NODES_PATH="/comfyui/custom_nodes"
-
 if [ -z "${DEBUG:-}" ]; then
     export DEBUG=false
 fi
@@ -42,36 +40,6 @@ if [ -z "$(find "${ROOT}" -mindepth 1 -exec echo {} \;)" ]; then
     exit 1
 fi
 
-function install_requirements() {
-    local dir="$1"
-    if [[ -f "${dir}/requirements.txt" ]]; then
-        echo "Installing requirements for ${dir}..."
-        pip install -r "${dir}/requirements.txt"
-        echo "Requirements installed for ${dir}."
-    else
-        echo "No requirements.txt found in ${dir}. Skipping."
-    fi
-}
-
-function process_install_py() {
-    local dir="$1"
-    if [[ -f "${dir}/install.py" ]]; then
-        python3 ${dir}/install.py
-    fi
-}
-
-function check_custom_nodes() {
-    for dir in "${CUSTOM_NODES_PATH}/*/"; do
-        if [ -d "${dir}" ]; then
-            echo "[BOOTSTRAP] Checking custom mode ${dir}"
-            local dirname=$(basename "$dir")
-            install_requirements ${dirname}
-            process_install_py ${dirname}
-            unset dirname
-        fi
-    done
-}
-
 bash /docker/scripts/install-comfyui-manager.sh
 bash /docker/scripts/update-all-custom-nodes.sh
 
@@ -81,9 +49,6 @@ if [ ! -d "${CUSTOM_NODES_PATH}" ]; then
     echo "[Error (Build Error?)] Unable to locate '${CUSTOM_NODES_PATH}' in the container. Is the build correct?"
     exit 1
 fi
-
-check_custom_nodes
-
 if [ -f "/data/config/startup.sh" ]; then
   pushd ${ROOT}
   . /data/config/startup.sh
