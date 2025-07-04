@@ -3,11 +3,14 @@
 function install_requirements() {
     local dir="$1"
     if [[ -f "${dir}/requirements.txt" ]]; then
-        echo "Installing requirements for ${dir}..."
-        pip install -r "${dir}/requirements.txt"
-        echo "Requirements installed for ${dir}."
+        echo "[INFO] Installing requirements for ${dir}..."
+        if ! pip install -r "${dir}/requirements.txt"; then
+            echo "[WARNING] Unable to install requirements for ${dir}..."
+        else
+            echo "[INFO] Requirements installed for ${dir}."
+        fi
     else
-        echo "No requirements.txt found in ${dir}. Skipping."
+        echo "[INFO] No requirements.txt found in ${dir}. Skipping."
     fi
 }
 
