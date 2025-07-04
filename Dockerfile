@@ -22,7 +22,7 @@ WORKDIR ${ROOT}
 
 RUN --mount=type=cache,target=/root/.cache/pip \
   pip install opencv-python mmdet mmengine && \
-  pip install -U openmim && \
+  pip install -U openmim diffusers["torch"] transformers omegaconf bitsandbytes && \
   mim install mmcv insightface onnxruntime-gpu
 
 RUN conda install -c nvidia cuda --no-update-deps -y
