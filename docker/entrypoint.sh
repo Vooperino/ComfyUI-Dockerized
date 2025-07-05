@@ -53,7 +53,7 @@ function process_directory() {
                 echo "[INFO] Installing packages from requirements.txt files in custom nodes directory:"
                 for pkg in "${pip_al_packages[@]}"; do
                     echo "[INFO] Installing $pkg..."
-                    if pip install "$pkg"; then
+                    if pip install "$pkg" -c /docker/constraints.txt; then
                         echo "[INFO] Successfully installed $pkg"
                     else
                         echo "[ERROR] Failed to install $pkg"
