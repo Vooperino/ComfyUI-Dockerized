@@ -41,7 +41,7 @@ function process_directory() {
                                 pkg=$(echo "$line" | sed -E 's/[<>=!~].*//')
                             fi
                             key="$pkg"
-                            if [[ -n "$pkg" && -z "${pip_al_seen_packages[$key]:-}" ]]; then
+                            if [[ -n "$pkg" && -z "${pip_al_seen_packages[$key]}" ]]; then
                                 pip_al_packages+=("$key")
                                 pip_al_seen_packages["$key"]=1
                             fi
