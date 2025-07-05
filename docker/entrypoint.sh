@@ -25,12 +25,49 @@ function process_directory() {
     echo "[INFO] Validating Custom Nodes Directory!"
     local dir="$1"
     if [[ -d "${dir}" ]]; then
-        for sub_dir in "${dir}"/*; do
-            if [[ -d "${sub_dir}" ]]; then
-                install_requirements "${sub_dir}"
-                process_install_py "${sub_dir}" || true
+        if [[ "${PIP_ALWAYS_LATEST}" == true ]]; then
+            local packages=()
+            declare -A seen_packages
+            for sub_dir in "$dir"/*; do
+                if [ -d "$sub_dir" ]; then
+                    if [ -f "$sub_dir/requirements.txt" ]; then
+                        while IFS= read -r line; do
+                            [[ -z "$line" ]] && continue
+                            if [[ "$line" == git+* ]]; then
+                                pkg="$line"
+                            else
+                                pkg=$(echo "$line" | sed -E 's/[<>=!~].*//')
+                            fi
+                            key="$pkg [$(basename "$sub_dir")]"
+                            if [[ -n "$pkg" && -z "${seen_packages[$key]}" ]]; then
+                                packages+=("$key")
+                                seen_packages["$key"]=1
+                            fi
+                        done < "$sub_dir/requirements.txt"
+                    fi
+                fi
+            done
+            if [[ ${#packages[@]} -gt 0 ]]; then
+                echo "[INFO] Installing packages from requirements.txt files in custom nodes directory:"
+                for pkg in "${packages[@]}"; do
+                    echo "  - $pkg"
+                    if pip install "$pkg" --upgrade --no-cache-dir; then
+                        echo "[INFO] Successfully installed $pkg"
+                    else
+                        echo "[ERROR] Failed to install $pkg"
+                    fi
+                done
+            else
+                echo "[INFO] No packages found in requirements.txt files."
             fi
-        done
+        else
+            for sub_dir in "${dir}"/*; do
+                if [[ -d "${sub_dir}" ]]; then
+                    install_requirements "${sub_dir}"
+                    process_install_py "${sub_dir}" || true
+                fi
+            done
+        fi
     else
         echo "[Error] ${dir} is not a directory."
     fi
@@ -74,6 +111,21 @@ MOUNTS["${ROOT}/models/onnx"]="/data/models/onnx"
 MOUNTS["${ROOT}/models/insightface"]="/data/models/insightface"
 MOUNTS["${ROOT}/models/clip"]="/data/models/clip"
 MOUNTS["${ROOT}/models/unet"]="/data/models/unet"
+
+if [ -z "${PIP_ALWAYS_LATEST}" ]; then
+    PIP_ALWAYS_LATES=false
+else
+    if [[ "${PIP_ALWAYS_LATEST}" == true ]]; then
+        echo "[Warning] Pip packages will be always downloaded as latest no matter with the version found in the 'requirements.txt' file"
+        unset PIP_ALWAYS_LATEST
+        PIP_ALWAYS_LATEST=true
+        #Just to be sure that the variable is set to true
+    else
+        echo "[Warning] Unknown value was set for PIP_ALWAYS_LATEST. Defaulting to false"
+        unset PIP_ALWAYS_LATEST
+        PIP_ALWAYS_LATEST=false
+    fi
+fi 
 
 for to_path in "${!MOUNTS[@]}"; do
   set -Eeuo pipefail

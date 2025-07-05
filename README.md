@@ -51,6 +51,7 @@ Using `install-docker.sh` will install the docker on the WSL instance so you don
 | `WEB_PORT` | No | `7860` | ComfyUI Web UI Port |
 | `DL_CUI_MANAGER` | No | `false` | Force check for ComfyUI-Manager is installed |
 | `CNODE_GIT_CHECK_LATEST` | No | `false` | Check all of the Custom Nodes for latest commit |
+| `PIP_ALWAYS_LATEST` | No | `false` | Installs always the latest version of the pip pcakages from custom nodes |
 | `DEBUG` | No | `false` | Enables extra logging outputs |
 
 # Libs Used
