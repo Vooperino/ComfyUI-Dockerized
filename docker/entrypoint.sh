@@ -52,6 +52,7 @@ function process_directory() {
             if [[ ${#packages[@]} -gt 0 ]]; then
                 echo "[INFO] Installing packages from requirements.txt files in custom nodes directory:"
                 for pkg in "${packages[@]}"; do
+                    echo "[INFO] Installing $pkg..."
                     if pip install "$pkg" --upgrade --no-cache-dir; then
                         echo "[INFO] Successfully installed $pkg"
                     else
