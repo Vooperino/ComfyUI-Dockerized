@@ -53,12 +53,13 @@ function process_directory() {
                 echo "[INFO] Installing packages from requirements.txt files in custom nodes directory:"
                 for pkg in "${pip_al_packages[@]}"; do
                     echo "[INFO] Installing $pkg..."
-                    if pip install "$pkg" --upgrade --no-cache-dir; then
+                    if pip install "$pkg"; then
                         echo "[INFO] Successfully installed $pkg"
                     else
                         echo "[ERROR] Failed to install $pkg"
                     fi
                 done
+                echo "[INFO] All packages from requirements.txt files in custom nodes directory have been processed. Cleaning up and Starting ComfyUI..."
             else
                 echo "[INFO] No packages found in requirements.txt files in custom nodes directory. Skipping installation."
             fi
