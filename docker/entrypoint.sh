@@ -24,11 +24,11 @@ function process_install_py() {
 function process_directory() {
     echo "[INFO] Validating Custom Nodes Directory!"
     local dir="$1"
-    local pip_al_packages=()
-    declare -A pip_al_seen_packages
     if [[ -d "${dir}" ]]; then
         if [[ "${PIP_ALWAYS_LATEST}" == true ]]; then
             set +u
+            local pip_al_packages=()
+            declare -A pip_al_seen_packages
             for sub_dir in "$dir"/*; do
                 if [ -d "$sub_dir" ]; then
                     if [ -f "$sub_dir/requirements.txt" ]; then
@@ -41,7 +41,9 @@ function process_directory() {
                                 pkg=$(echo "$line" | sed -E 's/[<>=!~].*//')
                             fi
                             key="$pkg"
+                            echo "[DEBUG] FOUND: $pkg"
                             if [[ -n "$pkg" && -z "${pip_al_seen_packages[$key]}" ]]; then
+                                echo "[DEBUG] ADDING: $pkg"
                                 pip_al_packages+=("$key")
                                 pip_al_seen_packages["$key"]=1
                             fi
@@ -63,6 +65,8 @@ function process_directory() {
                 echo "[INFO] No packages found in requirements.txt files in custom nodes directory. Skipping installation."
             fi
             set -u
+            unset pip_al_seen_packages
+            unset pip_al_packages
         else
             for sub_dir in "${dir}"/*; do
                 if [[ -d "${sub_dir}" ]]; then
@@ -74,9 +78,6 @@ function process_directory() {
     else
         echo "[Error] ${dir} is not a directory."
     fi
-
-    unset pip_al_seen_packages
-    unset pip_al_packages
 }
 
 mkdir -vp /data/config/custom_nodes
