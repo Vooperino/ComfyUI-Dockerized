@@ -22,6 +22,7 @@ function process_install_py() {
 }
 
 function process_directory() {
+    set -o
     echo "[INFO] Validating Custom Nodes Directory!"
     local dir="$1"
     local pip_al_packages=()
@@ -72,7 +73,7 @@ function process_directory() {
     else
         echo "[Error] ${dir} is not a directory."
     fi
-    
+
     unset pip_al_seen_packages
     unset pip_al_packages
 }
