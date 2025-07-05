@@ -22,18 +22,13 @@ function process_install_py() {
 }
 
 function process_directory() {
-    local set_u_was_enabled=false
-    if (set -o | grep -q 'nounset.*on'); then
-        set_u_was_enabled=true
-        set +u
-    fi
-
     echo "[INFO] Validating Custom Nodes Directory!"
     local dir="$1"
     local pip_al_packages=()
     declare -A pip_al_seen_packages
     if [[ -d "${dir}" ]]; then
         if [[ "${PIP_ALWAYS_LATEST}" == true ]]; then
+            set +u
             for sub_dir in "$dir"/*; do
                 if [ -d "$sub_dir" ]; then
                     if [ -f "$sub_dir/requirements.txt" ]; then
@@ -64,8 +59,9 @@ function process_directory() {
                     fi
                 done
             else
-                echo "[INFO] No packages found in requirements.txt files."
+                echo "[INFO] No packages found in requirements.txt files in custom nodes directory. Skipping installation."
             fi
+            set -u
         else
             for sub_dir in "${dir}"/*; do
                 if [[ -d "${sub_dir}" ]]; then
@@ -80,10 +76,6 @@ function process_directory() {
 
     unset pip_al_seen_packages
     unset pip_al_packages
-
-    if [[ "$set_u_was_enabled" == true ]]; then
-        set -u
-    fi
 }
 
 mkdir -vp /data/config/custom_nodes
