@@ -22,7 +22,12 @@ function process_install_py() {
 }
 
 function process_directory() {
-    set -o
+    local set_u_was_enabled=false
+    if (set -o | grep -q 'nounset.*on'); then
+        set_u_was_enabled=true
+        set +u
+    fi
+
     echo "[INFO] Validating Custom Nodes Directory!"
     local dir="$1"
     local pip_al_packages=()
@@ -41,7 +46,7 @@ function process_directory() {
                                 pkg=$(echo "$line" | sed -E 's/[<>=!~].*//')
                             fi
                             key="$pkg"
-                            if [[ -n "$pkg" && -z "${pip_al_seen_packages[$key]}" ]]; then
+                            if [[ -n "$pkg" && -z "${pip_al_seen_packages[$key]:-}" ]]; then
                                 pip_al_packages+=("$key")
                                 pip_al_seen_packages["$key"]=1
                             fi
@@ -52,7 +57,6 @@ function process_directory() {
             if [[ ${#packages[@]} -gt 0 ]]; then
                 echo "[INFO] Installing packages from requirements.txt files in custom nodes directory:"
                 for pkg in "${packages[@]}"; do
-                    echo "  - $pkg"
                     if pip install "$pkg" --upgrade --no-cache-dir; then
                         echo "[INFO] Successfully installed $pkg"
                     else
@@ -76,6 +80,10 @@ function process_directory() {
 
     unset pip_al_seen_packages
     unset pip_al_packages
+
+    if [[ "$set_u_was_enabled" == true ]]; then
+        set -u
+    fi
 }
 
 mkdir -vp /data/config/custom_nodes
