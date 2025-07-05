@@ -31,6 +31,7 @@ function process_directory() {
             for sub_dir in "$dir"/*; do
                 if [ -d "$sub_dir" ]; then
                     if [ -f "$sub_dir/requirements.txt" ]; then
+                        echo "[INFO] Found requirements.txt in $sub_dir - processing..."
                         while IFS= read -r line; do
                             [[ -z "$line" ]] && continue
                             if [[ "$line" == git+* ]]; then
@@ -38,7 +39,7 @@ function process_directory() {
                             else
                                 pkg=$(echo "$line" | sed -E 's/[<>=!~].*//')
                             fi
-                            key="$pkg [$(basename "$sub_dir")]"
+                            key="$pkg"
                             if [[ -n "$pkg" && -z "${seen_packages[$key]}" ]]; then
                                 packages+=("$key")
                                 seen_packages["$key"]=1
@@ -60,6 +61,8 @@ function process_directory() {
             else
                 echo "[INFO] No packages found in requirements.txt files."
             fi
+            unset packages
+            unset seen_packages
         else
             for sub_dir in "${dir}"/*; do
                 if [[ -d "${sub_dir}" ]]; then
