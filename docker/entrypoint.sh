@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 function install_requirements() {
     local dir="$1"
@@ -26,13 +26,12 @@ function process_directory() {
     local dir="$1"
     if [[ -d "${dir}" ]]; then
         if [[ "${PIP_ALWAYS_LATEST}" == true ]]; then
-            local packages=()
-            declare -A seen_packages
-
+            local pip_al_packages=()
+            declare -A pip_al_seen_packages
             for sub_dir in "$dir"/*; do
                 if [ -d "$sub_dir" ]; then
                     if [ -f "$sub_dir/requirements.txt" ]; then
-                        echo "[INFO] Found requirements.txt in $(dirname "$sub_dir")"
+                        echo "[INFO] Found requirements.txt in $(basename "$sub_dir")"
                         while IFS= read -r line; do
                             [[ -z "$line" ]] && continue
                             if [[ "$line" == git+* ]]; then
@@ -41,9 +40,9 @@ function process_directory() {
                                 pkg=$(echo "$line" | sed -E 's/[<>=!~].*//')
                             fi
                             key="$pkg"
-                            if [[ -n "$pkg" && -z "${seen_packages[$key]:-}" ]]; then
-                                packages+=("$key")
-                                seen_packages["$key"]=1
+                            if [[ -n "$pkg" && -z "${pip_al_seen_packages[$key]}" ]]; then
+                                pip_al_packages+=("$key")
+                                pip_al_seen_packages["$key"]=1
                             fi
                         done < "$sub_dir/requirements.txt"
                     fi
