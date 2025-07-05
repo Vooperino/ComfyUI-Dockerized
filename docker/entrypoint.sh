@@ -41,9 +41,7 @@ function process_directory() {
                                 pkg=$(echo "$line" | sed -E 's/[<>=!~].*//')
                             fi
                             key="$pkg"
-                            echo "[DEBUG] FOUND: $pkg"
                             if [[ -n "$pkg" && -z "${pip_al_seen_packages[$key]}" ]]; then
-                                echo "[DEBUG] ADDING: $pkg"
                                 pip_al_packages+=("$key")
                                 pip_al_seen_packages["$key"]=1
                             fi
@@ -51,9 +49,9 @@ function process_directory() {
                     fi
                 fi
             done
-            if [[ ${#packages[@]} -gt 0 ]]; then
+            if [[ ${#pip_al_packages[@]} -gt 0 ]]; then
                 echo "[INFO] Installing packages from requirements.txt files in custom nodes directory:"
-                for pkg in "${packages[@]}"; do
+                for pkg in "${pip_al_packages[@]}"; do
                     echo "[INFO] Installing $pkg..."
                     if pip install "$pkg" --upgrade --no-cache-dir; then
                         echo "[INFO] Successfully installed $pkg"
