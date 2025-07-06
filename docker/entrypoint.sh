@@ -63,7 +63,7 @@ function process_directory() {
             else
                 echo "[INFO] No packages found in requirements.txt files in custom nodes directory. Skipping installation."
             fi
-            
+
             echo "[INFO] Reinstalling diffusers (due to possible override)"
             if pip install diffusers --upgrade -c /docker/constraints.txt; then
                 echo "[INFO] Successfully reinstalled diffusers"
@@ -125,6 +125,8 @@ MOUNTS["${ROOT}/models/onnx"]="/data/models/onnx"
 MOUNTS["${ROOT}/models/insightface"]="/data/models/insightface"
 MOUNTS["${ROOT}/models/clip"]="/data/models/clip"
 MOUNTS["${ROOT}/models/unet"]="/data/models/unet"
+MOUNTS["${ROOT}/models/text_encoders"]="/data/models/text_encoders"
+MOUNTS["${ROOT}/models/diffusion_models"]="/data/models/diffusion_models"
 
 if [ -z "${PIP_ALWAYS_LATEST}" ]; then
     PIP_ALWAYS_LATES=false
