@@ -63,6 +63,14 @@ function process_directory() {
             else
                 echo "[INFO] No packages found in requirements.txt files in custom nodes directory. Skipping installation."
             fi
+            
+            echo "[INFO] Reinstalling diffusers (due to possible override)"
+            if pip install diffusers --upgrade -c /docker/constraints.txt; then
+                echo "[INFO] Successfully reinstalled diffusers"
+            else
+                echo "[ERROR] Failed to reinstall diffusers"
+            fi
+
             set -u
             unset pip_al_seen_packages
             unset pip_al_packages
