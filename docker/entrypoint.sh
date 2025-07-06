@@ -147,6 +147,10 @@ for to_path in "${!MOUNTS[@]}"; do
   echo Mounted $(basename "${from_path}")
 done
 
+bash /docker/scripts/install-comfyui-manager.sh
+bash /docker/scripts/update-all-custom-nodes.sh
+chmod -R 777 $ROOT/custom_nodes
+
 process_directory "/comfyui/custom_nodes"
 
 supervisord -c /opt/vlBootstrap/supervisord.conf
