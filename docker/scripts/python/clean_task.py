@@ -1,6 +1,6 @@
 import time
 import shutil
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from backend_config_lib import Configuration
       
