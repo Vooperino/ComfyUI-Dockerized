@@ -1,7 +1,7 @@
 from pathlib import Path
 import time
 
-TARGETS_PATHS = ["/data/models","/output"]
+TARGETS_PATHS = ["/data/models","/output","/data/logs"]
 
 if __name__ == '__main__':
     while True:

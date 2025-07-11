@@ -23,6 +23,10 @@ class Configuration:
                     "file_retention": {
                         "enabled": True,
                         "file_age": "30d"
+                    },
+                    "logging_retention": {
+                        "enabled": True,
+                        "file_age": "30d"
                     }
                 }
             }
@@ -65,6 +69,17 @@ class Configuration:
             self.__json_config['output']['file_retention']['enabled'] = True
         if 'file_age' not in self.__json_config['output']['file_retention']:
             self.__json_config['output']['file_retention']['file_age'] = '30d'
+        
+        if 'logging_retention' not in self.__json_config['output']:
+            self.__json_config['output']['logging_retention'] = {
+                'enabled': True,
+                'file_age': '30d'
+            }
+        
+        if 'enabled' not in self.__json_config['output']['logging_retention']:
+            self.__json_config['output']['logging_retention']['enabled'] = True
+        if 'file_age' not in self.__json_config['output']['logging_retention']:
+            self.__json_config['output']['logging_retention']['file_age'] = '30d'
         
         self.__update_permissions()
         with open(self.__config_file_path, 'w') as file:
@@ -121,3 +136,21 @@ class Configuration:
         if 'file_age' not in self.__json_config['output']['file_retention']:
             return self.__convert_interval("30d")
         return self.__convert_interval(self.__json_config['output']['file_retention']['file_age'])
+    
+    def is_logging_retention_enabled(self):
+        if 'output' not in self.__json_config:
+            return True
+        if 'logging_retention' not in self.__json_config['output']:
+            return True
+        if 'enabled' not in self.__json_config['output']['logging_retention']:
+            return True
+        return self.__json_config['output']['logging_retention']['enabled']
+    
+    def get_logging_retention_age(self):
+        if 'output' not in self.__json_config:
+            return self.__convert_interval("30d")
+        if 'logging_retention' not in self.__json_config['output']:
+            return self.__convert_interval("30d")
+        if 'file_age' not in self.__json_config['output']['logging_retention']:
+            return self.__convert_interval("30d")
+        return self.__convert_interval(self.__json_config['output']['logging_retention']['file_age'])
