@@ -35,7 +35,7 @@ def __check_logging_retention(path):
         log_amount = 0
         for log_file in path.iterdir():
             if log_file.is_dir():
-                __check_logging_retention(log_file.path)
+                __check_logging_retention(log_file)
             elif log_file.is_file():
                 log_retention_age = CFG.get_logging_retention_age()
                 log_cutoff_time = datetime.now() - log_retention_age
@@ -53,7 +53,7 @@ def __check_output_retention(path):
         output_amount = 0
         for item in path.iterdir():
             if item.is_dir():
-                __check_output_retention(item.path)
+                __check_output_retention(item)
             elif item.is_file():
                 retention_age = CFG.get_file_retention_age()
                 cutoff_time = datetime.now() - retention_age
@@ -74,17 +74,7 @@ if __name__ == '__main__':
         __check_logging_retention(LOG_PATH)
         
         if CFG.is_file_retention_enabled and not CFG.is_cleanup_directory_enabled():
-            retention_age = CFG.get_file_retention_age()
-            cutoff_time = datetime.now() - retention_age
-            print(f"{__LOG_PREFIX} (File Retention) Checking for files older than {cutoff_time}...")
-            amount = 0            
-            for item in OUTPUT_PATH.iterdir():
-                if item.is_file() and datetime.fromtimestamp(item.stat().st_mtime) < cutoff_time:
-                    print(f"{__LOG_PREFIX} (File Retention) Removing file: {item}")
-                    item.unlink()
-                    amount += 1
-            if amount > 0:
-                print(f"{__LOG_PREFIX} (File Retention) Removed {amount} files older than {cutoff_time}.")
+            __check_output_retention(OUTPUT_PATH)
 
         elif CFG.is_cleanup_directory_enabled() and not CFG.is_file_retention_enabled():
             cleanup_interval = CFG.get_cleanup_directory_interval()
