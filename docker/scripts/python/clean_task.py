@@ -7,7 +7,7 @@ from backend_config_lib import Configuration
 OUTPUT_PATH = Path("/output")
 CFG = Configuration()
 
-__LOG_PREFIX= "[Cleanup Service] "
+__LOG_PREFIX= "[Cleanup Service]"
 
 def __load_config():
     global CFG
@@ -25,7 +25,6 @@ def __startup_cleanup():
             elif item.is_dir():
                 shutil.rmtree(item)
 
-
 if __name__ == '__main__':
     __load_config()
     __startup_cleanup()
@@ -35,10 +34,15 @@ if __name__ == '__main__':
             retention_age = CFG.get_file_retention_age()
             cutoff_time = datetime.now() - retention_age
             print(f"{__LOG_PREFIX} (File Retention) Checking for files older than {cutoff_time}...")
+            amount = 0            
             for item in OUTPUT_PATH.iterdir():
                 if item.is_file() and datetime.fromtimestamp(item.stat().st_mtime) < cutoff_time:
                     print(f"{__LOG_PREFIX} (File Retention) Removing file: {item}")
                     item.unlink()
+                    amount += 1
+            if amount > 0:
+                print(f"{__LOG_PREFIX} (File Retention) Removed {amount} files older than {cutoff_time}.")
+                
         elif CFG.is_cleanup_directory_enabled() and not CFG.is_file_retention_enabled():
             cleanup_interval = CFG.get_cleanup_directory_interval()
             last_cleanup_time = datetime.now() - cleanup_interval
