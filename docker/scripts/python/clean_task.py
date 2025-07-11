@@ -8,9 +8,12 @@ class Configuration:
     def __init__(self):
         self.__config_file_path = "/data/config/backend_config.json"
         self.__json_config = {}
+    
+    def __get_config_file(self):
+        return Path(self.__config_file_path)
 
     def __validate_config_existance(self):
-        if not self.__config_file_path.exists():
+        if not self.__get_config_file().exists():
             print (f"Config file {self.__config_file_path} does not exist. Creating new!")
             default_config = {
                 "output": {
@@ -30,8 +33,8 @@ class Configuration:
             self.__update_permissions()
 
     def __update_permissions(self):
-        if self.__config_file_path.exists():
-            self.__config_file_path.chmod(0o777)
+        if self.__get_config_file().exists():
+            self.__get_config_file().chmod(0o777)
     
     def __convert_interval(self, interval_str):
         if interval_str.endswith('d'):
