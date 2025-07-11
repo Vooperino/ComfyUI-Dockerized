@@ -12,7 +12,7 @@ class Configuration:
 
     def __validate_config_existance(self):
         if not self.__get_config_file().exists():
-            print (f"Config file {self.__config_file_path} does not exist. Creating new!")
+            print (f"(CONFIG) Config file {self.__config_file_path} does not exist. Creating new!")
             default_config = {
                 "output": {
                     "cleanup_on_startup": False,
