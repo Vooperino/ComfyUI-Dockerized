@@ -53,4 +53,4 @@ if __name__ == '__main__':
             print(f"{__LOG_PREFIX} No cleanup tasks are enabled. Skipping cleanup.")
         else:
             print(f"{__LOG_PREFIX} (CONFLICT) Both file retention and directory cleanup are enabled. Skipping cleanup.")
-        time.sleep(5)
+        time.sleep(10)
