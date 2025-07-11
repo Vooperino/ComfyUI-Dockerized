@@ -128,6 +128,21 @@ MOUNTS["${ROOT}/models/unet"]="/data/models/unet"
 MOUNTS["${ROOT}/models/text_encoders"]="/data/models/text_encoders"
 MOUNTS["${ROOT}/models/diffusion_models"]="/data/models/diffusion_models"
 
+if [ -z "${DEBUG:-}" ]; then
+    export DEBUG=false
+fi
+
+if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null; then
+    echo "======== WSL NOTICE ========"
+    echo "You are now executing this container in WSL, which can make the system unstable and unresponsive."
+    echo " "
+    echo "You've been warned. Use it with caution!"
+    echo " "
+    echo "Application will start in 5 seconds"
+    sleep 5s
+fi
+
+
 if [ -z "${PIP_ALWAYS_LATEST}" ]; then
     PIP_ALWAYS_LATES=false
 else
@@ -141,7 +156,17 @@ else
         unset PIP_ALWAYS_LATEST
         PIP_ALWAYS_LATEST=false
     fi
-fi 
+fi
+
+if [ "$DEBUG" = "true" ]; then
+    echo "[DEBUG] Extra Debugging is enabled"
+    echo "[DEBUG] Displaying Project Env Values"
+    echo "DL_CUI_MANAGER => ${DL_CUI_MANAGER:-}"
+    echo "CNODE_GIT_CHECK_LATEST => ${CNODE_GIT_CHECK_LATEST:-}"
+    echo "PIP_ALWAYS_LATEST => ${PIP_ALWAYS_LATEST:-}"
+    echo "[DEBUG] Sleeping for 5 Seconds"
+    sleep 5s
+fi
 
 for to_path in "${!MOUNTS[@]}"; do
   set -Eeuo pipefail
@@ -164,4 +189,3 @@ chmod -R 777 $ROOT/custom_nodes
 process_directory "/comfyui/custom_nodes"
 
 supervisord -c /opt/vlBootstrap/supervisord.conf
-startComfy
