@@ -35,6 +35,7 @@ def __scan_output_directory(path):
         print(f"(File Retention) Output path {path} does not exist. Skipping scan.")
         return
     amount = 0
+    print(f"(File Retention) Scanning output directory for files older than {CFG.get_file_retention_age()}...")
     for outfile in path.iterdir():
         if outfile.is_file():
             retention_age = CFG.get_file_retention_age()
