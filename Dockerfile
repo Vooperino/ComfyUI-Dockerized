@@ -29,6 +29,8 @@ RUN conda install -c nvidia cuda --no-update-deps -y
 
 RUN rm -rf /install /temp_libs
 
+RUN pip install "numpy<2"
+
 HEALTHCHECK --interval=5m --timeout=15s --start-period=1m --retries=3 \
   CMD bash /docker/scripts/docker-health.sh || exit 1
 
