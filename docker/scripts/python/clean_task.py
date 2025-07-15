@@ -32,10 +32,9 @@ def __startup_cleanup():
 def __scan_output_directory(path):
     global CFG
     if not path.exists():
-        print(f"(File Retention) Output path {path} does not exist. Skipping scan.")
+        print(f"{__LOG_PREFIX} (File Retention) Output path {path} does not exist. Skipping scan.")
         return
     amount = 0
-    print(f"(File Retention) Scanning output directory for files older than {CFG.get_file_retention_age()}...")
     for outfile in path.iterdir():
         if outfile.is_file():
             retention_age = CFG.get_file_retention_age()
@@ -46,7 +45,7 @@ def __scan_output_directory(path):
         elif outfile.is_dir():
             __scan_output_directory(outfile)
     if amount > 0:
-        print(f"(File Retention) Removed {amount} files older than {cutoff_time}.")
+        print(f"{__LOG_PREFIX} (File Retention) Removed {amount} files older than {cutoff_time}.")
 
 if __name__ == '__main__':
     __load_config()
@@ -54,6 +53,7 @@ if __name__ == '__main__':
     while True:
         __load_config() # Make the configuration to be dynamic
         if CFG.is_file_retention_enabled and not CFG.is_cleanup_directory_enabled():
+            print(f"{__LOG_PREFIX} Performing output file retention cleanup...")
             __scan_output_directory(OUTPUT_PATH)
         elif CFG.is_cleanup_directory_enabled() and not CFG.is_file_retention_enabled():
             cleanup_interval = CFG.get_cleanup_directory_interval()
