@@ -1,57 +1,93 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-if [ -z "${DEBUG:-}" ]; then
-    export DEBUG=false
-fi
+function install_requirements() {
+    local dir="$1"
+    if [[ -f "${dir}/requirements.txt" ]]; then
+        echo "[INFO] Installing requirements for ${dir}..."
+        if ! pip install -r "${dir}/requirements.txt"; then
+            echo "[WARNING] Unable to install requirements for ${dir}..."
+        else
+            echo "[INFO] Requirements installed for ${dir}."
+        fi
+    else
+        echo "[INFO] No requirements.txt found in ${dir}. Skipping."
+    fi
+}
 
-if [ "$DEBUG" = "true" ]; then
-    echo "[DEBUG] Extra Debugging is enabled"
-    echo "[DEBUG] Displaying Project Env Values"
-    echo "DL_CUI_MANAGER => ${DL_CUI_MANAGER:-}"
-    echo "CNODE_GIT_CHECK_LATEST => ${CNODE_GIT_CHECK_LATEST:-}"
-    echo "[DEBUG] Sleeping for 5 Seconds"
-    sleep 5s
-fi
+function process_install_py() {
+    local dir="$1"
+    if [[ -f "${dir}/install.py" ]]; then
+        python3 ${dir}/install.py
+    fi
+}
 
-if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null; then
-    echo "======== WSL NOTICE ========"
-    echo "You are now executing this container in WSL, which can make the system unstable and unresponsive."
-    echo " "
-    echo "You've been warned. Use it with caution!"
-    echo " "
-    echo "Application will start in 5 seconds"
-    sleep 5s
-fi
+function process_directory() {
+    echo "[INFO] Validating Custom Nodes Directory!"
+    local dir="$1"
+    if [[ -d "${dir}" ]]; then
+        if [[ "${PIP_ALWAYS_LATEST}" == true ]]; then
+            set +u
+            local pip_al_packages=()
+            declare -A pip_al_seen_packages
+            for sub_dir in "$dir"/*; do
+                if [ -d "$sub_dir" ]; then
+                    if [ -f "$sub_dir/requirements.txt" ]; then
+                        echo "[INFO] Found requirements.txt in $(basename "$sub_dir")"
+                        while IFS= read -r line; do
+                            [[ -z "$line" ]] && continue
+                            if [[ "$line" == git+* ]]; then
+                                pkg="$line"
+                            else
+                                pkg=$(echo "$line" | sed -E 's/[<>=!~].*//')
+                            fi
+                            key="$pkg"
+                            if [[ -n "$pkg" && -z "${pip_al_seen_packages[$key]}" ]]; then
+                                pip_al_packages+=("$key")
+                                pip_al_seen_packages["$key"]=1
+                            fi
+                        done < "$sub_dir/requirements.txt"
+                    fi
+                fi
+            done
+            if [[ ${#pip_al_packages[@]} -gt 0 ]]; then
+                echo "[INFO] Installing packages from requirements.txt files in custom nodes directory:"
+                for pkg in "${pip_al_packages[@]}"; do
+                    echo "[INFO] Installing $pkg..."
+                    if pip install "$pkg" --upgrade -c /docker/constraints.txt; then
+                        echo "[INFO] Successfully installed $pkg"
+                    else
+                        echo "[ERROR] Failed to install $pkg"
+                    fi
+                done
+                echo "[INFO] All packages from requirements.txt files in custom nodes directory have been processed. Cleaning up and Starting ComfyUI..."
+            else
+                echo "[INFO] No packages found in requirements.txt files in custom nodes directory. Skipping installation."
+            fi
 
-echo "[INFO] Checking, before launching..."
-echo "[INFO] Checking and validating app directory"
-if [ -z "${ROOT}" ]; then
-    echo "[IMAGE ISSUE] Required Env var 'ROOT' returning as empty or none, which is not a expected!"
-    exit 1
-fi
+            echo "[INFO] Reinstalling diffusers (due to possible override)"
+            if pip install diffusers --upgrade -c /docker/constraints.txt; then
+                echo "[INFO] Successfully reinstalled diffusers"
+            else
+                echo "[ERROR] Failed to reinstall diffusers"
+            fi
 
-if [ ! -d "${ROOT}" ]; then
-    echo "[IMAGE ISSUE] App Dir '${ROOT}' is not found! Build issue?"
-    exit 1
-fi
-
-if [ -z "$(find "${ROOT}" -mindepth 1 -exec echo {} \;)" ]; then
-    echo "[IMAGE ISSUE] App Dir '${ROOT}' is empty! Build issue?"
-    exit 1
-fi
-
-#if [ ! -d "/CLEAN_CONFIG/web/extensions" ]; then
-#    echo "[IMAGE ISSUE] Clean CFG '/CLEAN_CONFIG/web/extensions/' is not found! Build issue?"
-#    exit 1
-#fi
-
-#if [ -z "$(find "/CLEAN_CONFIG/web/extensions" -mindepth 1 -exec echo {} \;)" ]; then
-#    echo "[IMAGE ISSUE] Clean CFG '/CLEAN_CONFIG/web/extensions/' is empty! Build issue?"
-#    exit 1
-#fi
+            set -u
+            unset pip_al_seen_packages
+            unset pip_al_packages
+        else
+            for sub_dir in "${dir}"/*; do
+                if [[ -d "${sub_dir}" ]]; then
+                    install_requirements "${sub_dir}"
+                    process_install_py "${sub_dir}" || true
+                fi
+            done
+        fi
+    else
+        echo "[Error] ${dir} is not a directory."
+    fi
+}
 
 mkdir -vp /data/config/custom_nodes
-#mkdir -vp /data/config/web-extensions
 mkdir -vp /comfyui/custom_nodes
 
 mkdir -vp /data/models/upscale_models
@@ -89,44 +125,48 @@ MOUNTS["${ROOT}/models/onnx"]="/data/models/onnx"
 MOUNTS["${ROOT}/models/insightface"]="/data/models/insightface"
 MOUNTS["${ROOT}/models/clip"]="/data/models/clip"
 MOUNTS["${ROOT}/models/unet"]="/data/models/unet"
+MOUNTS["${ROOT}/models/text_encoders"]="/data/models/text_encoders"
+MOUNTS["${ROOT}/models/diffusion_models"]="/data/models/diffusion_models"
 
-function install_requirements() {
-    local dir="$1"
-    if [[ -f "${dir}/requirements.txt" ]]; then
-        echo "Installing requirements for ${dir}..."
-        pip install -r "${dir}/requirements.txt"
-        echo "Requirements installed for ${dir}."
+if [ -z "${DEBUG:-}" ]; then
+    export DEBUG=false
+fi
+
+if grep -qEi "(Microsoft|WSL)" /proc/version &> /dev/null; then
+    echo "======== WSL NOTICE ========"
+    echo "You are now executing this container in WSL, which can make the system unstable and unresponsive."
+    echo " "
+    echo "You've been warned. Use it with caution!"
+    echo " "
+    echo "Application will start in 5 seconds"
+    sleep 5s
+fi
+
+
+if [ -z "${PIP_ALWAYS_LATEST}" ]; then
+    PIP_ALWAYS_LATES=false
+else
+    if [[ "${PIP_ALWAYS_LATEST}" == true ]]; then
+        echo "[Warning] Pip packages will be always downloaded as latest no matter with the version found in the 'requirements.txt' file"
+        unset PIP_ALWAYS_LATEST
+        PIP_ALWAYS_LATEST=true
+        #Just to be sure that the variable is set to true
     else
-        echo "No requirements.txt found in ${dir}. Skipping."
+        echo "[Warning] Unknown value was set for PIP_ALWAYS_LATEST. Defaulting to false"
+        unset PIP_ALWAYS_LATEST
+        PIP_ALWAYS_LATEST=false
     fi
-}
+fi
 
-function process_install_py() {
-    local dir="$1"
-    if [[ -f "${dir}/install.py" ]]; then
-        python3 ${dir}/install.py
-    fi
-}
-
-function process_directory() {
-    local dir="$1"
-    if [[ -d "${dir}" ]]; then
-        for sub_dir in "${dir}"/*; do
-            if [[ -d "${sub_dir}" ]]; then
-                install_requirements "${sub_dir}"
-                process_install_py "${sub_dir}" || true
-            fi
-        done
-    else
-        echo "Error: ${dir} is not a directory."
-    fi
-}
-
-function copyFreshExtenstion() {
-  echo Copying fresh copy of web-extensions core
-  cp -r -f -v "/CLEAN_CONFIG/web/extensions/." "${ROOT}/web/extensions/."
-}
-
+if [ "$DEBUG" = "true" ]; then
+    echo "[DEBUG] Extra Debugging is enabled"
+    echo "[DEBUG] Displaying Project Env Values"
+    echo "DL_CUI_MANAGER => ${DL_CUI_MANAGER:-}"
+    echo "CNODE_GIT_CHECK_LATEST => ${CNODE_GIT_CHECK_LATEST:-}"
+    echo "PIP_ALWAYS_LATEST => ${PIP_ALWAYS_LATEST:-}"
+    echo "[DEBUG] Sleeping for 5 Seconds"
+    sleep 5s
+fi
 
 for to_path in "${!MOUNTS[@]}"; do
   set -Eeuo pipefail
@@ -144,68 +184,8 @@ done
 
 bash /docker/scripts/install-comfyui-manager.sh
 bash /docker/scripts/update-all-custom-nodes.sh
-
-if [ -f "/data/config/startup.sh" ]; then
-  pushd ${ROOT}
-  . /data/config/startup.sh
-  popd
-fi
-
 chmod -R 777 $ROOT/custom_nodes
-process_directory "${ROOT}/custom_nodes"
 
-#WEB_EXTENSIONS="${ROOT}/web/extensions"
+process_directory "/comfyui/custom_nodes"
 
-#if [ -z "$(find "${WEB_EXTENSIONS}" -mindepth 1)" ]; then
-#  echo "[WARNING] Web Extensions are empty"
-#  copyFreshExtenstion
-#fi
-
-if [ -f "/data/config/startup.sh" ]; then
-  pushd ${ROOT}
-  . /data/config/startup.sh
-  popd
-fi
-
-exec "$@"
-if [ -z "${CLI_ARGS}" ]; then
-    echo "[WARN] No Cli Args was found..."
-fi
-
-DEFAULT_PORT="7860"
-
-echo "[INFO] Checking Web Port"
-
-if [ -z "${WEB_PORT:-}" ]; then
-    export WEB_PORT="${DEFAULT_PORT}"
-    echo "[WARN] Using Default Web Port ${WEB_PORT}"
-fi
-
-if ! [[ "${WEB_PORT}" =~ ^[0-9]+$ ]]; then
-    echo "[WARN] Given Web Port is '${WEB_PORT}' which required to be integer value. Defaulting to ${DEFAULT_PORT}"
-    unset WEB_PORT
-    export WEB_PORT="${DEFAULT_PORT}"
-fi
-
-if lsof -i -P -n | grep -q ":$WEB_PORT "; then
-    echo "[ERROR] Port ${WEB_PORT} already in-use! Exiting"
-    exit 1
-fi
-
-sed -i "s/%WEB_PORT%/${WEB_PORT}/g" /docker/scripts/docker-health.sh
-
-echo "[INFO] Final Checkup..."
-if [ ! -f "${ROOT}/web/docker-up.html" ]; then
-    cp -r -f "/CLEAN_CONFIG/docker-up.html" "${ROOT}/web"
-fi
-
-echo "[INFO] Starting Up ComfyUI (Web Port ${WEB_PORT})..."
-while true; do
-    python -u main.py --listen --port ${WEB_PORT} ${CLI_ARGS}
-    if [ $? -ne 0 ]; then
-        echo "Exited as 0."
-        break
-    else
-        echo "[WARN] ComfyUI has crashed, restarting..."
-    fi
-done
+supervisord -c /opt/vlBootstrap/supervisord.conf

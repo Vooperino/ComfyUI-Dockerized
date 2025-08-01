@@ -1,4 +1,4 @@
-FROM pytorch/pytorch:2.5.1-cuda12.4-cudnn9-runtime
+FROM pytorch/pytorch:2.7.1-cuda12.8-cudnn9-devel
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PIP_PREFER_BINARY=1
@@ -22,12 +22,14 @@ WORKDIR ${ROOT}
 
 RUN --mount=type=cache,target=/root/.cache/pip \
   pip install opencv-python mmdet mmengine && \
-  pip install -U openmim && \
+  pip install -U openmim diffusers && \
   mim install mmcv insightface onnxruntime-gpu
 
 RUN conda install -c nvidia cuda --no-update-deps -y
 
 RUN rm -rf /install /temp_libs
+
+RUN pip install "numpy<2"
 
 HEALTHCHECK --interval=5m --timeout=15s --start-period=1m --retries=3 \
   CMD bash /docker/scripts/docker-health.sh || exit 1
