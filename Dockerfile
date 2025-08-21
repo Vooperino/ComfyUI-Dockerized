@@ -1,4 +1,4 @@
-FROM pytorch/pytorch:2.7.1-cuda12.8-cudnn9-devel
+FROM pytorch/pytorch:2.8.0-cuda12.9-cudnn9-devel
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV PIP_PREFER_BINARY=1
@@ -23,7 +23,7 @@ WORKDIR ${ROOT}
 RUN --mount=type=cache,target=/root/.cache/pip \
   pip install opencv-python mmdet mmengine && \
   pip install -U openmim diffusers && \
-  mim install mmcv insightface onnxruntime-gpu
+  mim install --trusted-host download.openmmlab.com mmcv insightface onnxruntime-gpu
 
 RUN conda install -c nvidia cuda --no-update-deps -y
 
