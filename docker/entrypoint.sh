@@ -188,4 +188,6 @@ chmod -R 777 $ROOT/custom_nodes
 
 process_directory "/comfyui/custom_nodes"
 
+pip install transformers -c /docker/constraints.txt
+
 supervisord -c /opt/vlBootstrap/supervisord.conf
