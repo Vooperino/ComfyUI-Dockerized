@@ -64,6 +64,8 @@ fi
 mkdir -p "${CLEAN_CONF_PATH}/web/extensions"
 cp -r -f "${SCRIPT_DIR}/docker-up.html" "${CLEAN_CONF_PATH}/docker-up.html"
 
+pip install --upgrade transformers accelerate safetensors
+
 cd ${SCRIPT_DIR}
 python3 ./copy_status_page.py
 exit 0
